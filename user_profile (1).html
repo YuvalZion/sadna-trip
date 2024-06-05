@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הרשמה - פרטים אישיים</title>
+    <link rel="stylesheet" href="user_profile.css">
+    <script src="user_profile.js"></script>
+</head>
+<body>
+    <div id="form1" class="container">
+        <h2>פרטים אישיים </h2>
+        <div class="form-container">
+            <form id="user-form" action="user_profile.php" method="post" onsubmit="return validateForm()">
+                <label for="fullname">שם מלא:</label>
+                <input type="text" id="fullname" name="fullname" required>
+                <label for="phone">מספר טלפון:</label>
+                <input type="tel" id="phone" name="phone" required>
+                <label for="dob">תאריך לידה:</label>
+                <input type="date" id="dob" name="dob" required>
+                <label for="passport_exp">תאריך תפוגת דרכון:</label>
+                <input type="date" id="passport_exp" name="passport_exp" required>
+                <label for="email">אימייל:</label>
+                <input type="email" id="email" name="email" required>
+                <label for="password">סיסמה:</label>
+                <input type="password" id="password" name="password" required>
+                <div class="form-footer">
+                    <input id="sub" type="submit" value="Submit">
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
