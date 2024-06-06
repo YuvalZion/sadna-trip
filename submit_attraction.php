@@ -28,7 +28,6 @@ $attractionNames = array(
     'shopping' => 'קניות',
     'night_life' => 'חיי לילה',
     'shows_and_plays' => 'מופעים והצגות'
-
 );
 
 $response = array();
@@ -52,12 +51,7 @@ foreach ($attractionNames as $attractionKey => $attractionName) {
 // Close connection
 $conn->close();
 
-// Output response (optional, for debugging)
-// foreach ($response as $message) {
-//     echo $message . "<br>";
-//}
-
 // Redirect to user_img.php with email parameter
-header("Location: user_img.php?email=" . urlencode($email));
+header("Location: add_item.php?email=" . urlencode($email));
 exit();
 ?>

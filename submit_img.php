@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['picture']) && isset($
         $stmt->send_long_data(0, $imgData);
         if ($stmt->execute()) {
             // Image uploaded successfully, now redirect to add_item.php with email
-            header("Location: add_item.php?email=" . urlencode($email));
+            header("Location: Attraction_rate.php?email=" . urlencode($email));
             exit();
         } else {
             echo "Error uploading image: " . $stmt->error;

@@ -39,7 +39,7 @@ $sql = "INSERT INTO User_profile (email, user_name, phone, passport_expiration_d
         VALUES ('$email', '$user_name', '$phone', '$passport_expiration_date', '$date_birth', '$user_password')";
 
 if ($conn->query($sql) === TRUE) {
-    header("Location: Attraction_rate.php?email=$email");
+    header("Location: user_img.php?email=$email");
     exit();
 } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
