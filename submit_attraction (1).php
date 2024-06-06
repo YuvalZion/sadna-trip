@@ -20,16 +20,15 @@ $email = $_POST['email'];
 $attractionNames = array(
     'museums' => 'מוזיאונים וגלריות',
     'restaurants' => 'מסעדות',
-    'amusement_parks' => 'פארקי שעשועים',
+    'parks' => 'פארקים',
     'water_activities' => 'פעילויות מים',
-    'nature_trips' => 'טיולי טבע',
-    'extreme_sports' => 'ספורט קיצי',
-    'extreme' => 'אתגרים קיציים',
+    'nature_trips' => 'טיולי שטח וטבע',
+    'extreme_sports' => 'אקסטרים וספורט',
+    'religion_culture' => 'דת ותרבות ',
     'shopping' => 'קניות',
     'night_life' => 'חיי לילה',
-    'shows_and_plays' => 'הופעות והצגות',
-    'parks' => 'פארקים',
-    'accessibility' => 'נגישות'
+    'shows_and_plays' => 'מופעים והצגות'
+
 );
 
 $response = array();

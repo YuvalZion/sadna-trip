@@ -29,9 +29,9 @@
                 <span id="restaurants-rating">5</span>
             </div>
             <div class="attraction">
-                <label for="amusement_parks">פארקי שעשועים:</label>
-                <input type="range" id="amusement_parks" name="amusement_parks" min="1" max="10" value="5" oninput="updateRating('amusement_parks', 'amusement_parks-rating')">
-                <span id="amusement_parks-rating">5</span>
+                <label for="parks">פארקים:</label>
+                <input type="range" id="parks" name="parks" min="1" max="10" value="5" oninput="updateRating('parks', 'parks-rating')">
+                <span id="parks-rating">5</span>
             </div>
             <div class="attraction">
                 <label for="water_activities">פעילויות מים:</label>
@@ -39,19 +39,19 @@
                 <span id="water_activities-rating">5</span>
             </div>
             <div class="attraction">
-                <label for="nature_trips">טיולי טבע:</label>
+                <label for="nature_trips">טיולי שטח וטבע:</label>
                 <input type="range" id="nature_trips" name="nature_trips" min="1" max="10" value="5" oninput="updateRating('nature_trips', 'nature_trips-rating')">
                 <span id="nature_trips-rating">5</span>
             </div>
             <div class="attraction">
-                <label for="extreme_sports">ספורט קיצי:</label>
+                <label for="extreme_sports">אקסטרים וספורט:</label>
                 <input type="range" id="extreme_sports" name="extreme_sports" min="1" max="10" value="5" oninput="updateRating('extreme_sports', 'extreme_sports-rating')">
                 <span id="extreme_sports-rating">5</span>
             </div>
             <div class="attraction">
-                <label for="extreme">אתגרים קיציים:</label>
-                <input type="range" id="extreme" name="extreme" min="1" max="10" value="5" oninput="updateRating('extreme', 'extreme-rating')">
-                <span id="extreme-rating">5</span>
+                <label for="religion_culture">דת ותרבות:</label>
+                <input type="range" id="religion_culture" name="religion_culture" min="1" max="10" value="5" oninput="updateRating('religion_culture', 'religion_culture-rating')">
+                <span id="religion_culture-rating">5</span>
             </div>
             <div class="attraction">
                 <label for="shopping">קניות:</label>
@@ -64,19 +64,11 @@
                 <span id="night_life-rating">5</span>
             </div>
             <div class="attraction">
-                <label for="shows_and_plays">הופעות והצגות:</label>
+                <label for="shows_and_plays">מופעים והצגות:</label>
                 <input type="range" id="shows_and_plays" name="shows_and_plays" min="1" max="10" value="5" oninput="updateRating('shows_and_plays', 'shows_and_plays-rating')">
                 <span id="shows_and_plays-rating">5</span>
             </div>
-            <div class="attraction">
-                <label for="parks">פארקים:</label>
-                <input type="range" id="parks" name="parks" min="1" max="10" value="5" oninput="updateRating('parks', 'parks-rating')">
-                <span id="parks-rating">5</span>
-            </div>
-            <div class="attraction">
-                <label for="accessibility">נגישות:</label>
-                <input type="range" id="accessibility" name="accessibility" min="1" max="10" value="5" oninput="updateRating('accessibility', 'accessibility-rating')">
-                <span id="accessibility-rating">5</span>
+
            
             
             <!-- Hidden field to hold the email passed from the first form -->
