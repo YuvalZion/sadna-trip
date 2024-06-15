@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="login.css">
+    
+</head>
+<body>
+        <div class="container">
+        <h2>כניסה</h2>
+            <div class="form-container">
+                <form id="loginForm" method="post" action="login.php">
+                    <div class="form-group">
+                        <a href="../Process 1 - Create profile/user_profile.html">הרשמה</a>
+                        <label for="email">אימייל</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">סיסמה</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit">התחברות</button>
+                </form>
+        
+                <p id="message"></p>
+            </div>
+        </div>
+</body>
+</html>

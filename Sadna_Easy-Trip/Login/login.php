@@ -1,9 +1,9 @@
 <?php
 // Database connection settings
 $servername = "localhost";
-$username = "zlilma_admin_yz";
-$password = "zlilyuval123";
-$dbname = "zlilma_test";
+$username = "zlilma_admin_smy";
+$password = "easy_trip123";
+$dbname = "zlilma_Easy_Trip";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -27,10 +27,10 @@ $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
     // Redirect to home.php with email as query parameter
-    header("Location: home.php?email=$email");
+    header("Location: ../Home-Page/home_page.php?email=$email");
     exit();
 } else {
-    echo "אימייל או סיסמה לא נכונים";
+    echo '<script>alert("האימייל או הסיסמה שגויים"); window.history.back();</script>';
 }
 
 $conn->close();
