@@ -1,0 +1,168 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #e9ecef;
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 100vh;
+}
+
+.container {
+    width: 450px;
+    min-height: 800px;
+    margin: 50px auto;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative; /* Add this line */
+}
+
+.container h2 {
+    text-align: center;
+    color: #343a40;
+    background: #007bff;
+    color: white;
+    padding: 20px 0;
+    margin: 0;
+}
+
+.form-container {
+    padding: 30px;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    color: #495057;
+    font-weight: bold;
+    text-align: right; /* Adjusted text alignment for better RTL support */
+}
+
+input[type="text"], input[type="tel"], input[type="date"],input[type="email"], input[type="email"], input[type="time"], input[type="number"], select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+    text-align: right; /* Adjusted text alignment for better RTL support */
+}
+
+.sub-form-container {
+    padding-right: 80px; /* Adjusted padding for better alignment */
+}
+
+.sub-form {
+    padding-left: 100px; /* Added padding to move content more to the left */
+}
+
+.form-footer {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 100%;
+    text-align: left;
+}
+
+.form-footer button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    background-color: #28a745;
+    color: #fff;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.form-footer button:hover {
+    background-color: #218838;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.preview-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.additional-profile button {
+    padding: 5px 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-top: -10px;
+}
+
+.additional-profile button:hover {
+    background-color: #d32f2f;
+}
+
+.menu-container {
+    position: absolute;
+    top: 90px; /* Adjust distance from top as needed */
+    right: 0px; /* Adjust distance from right to align with container */
+    width: 80px; /* Adjust menu width as needed */
+    background-color: #f8f9fa;
+    /*border: 1px solid #ced4da;*/
+    padding: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    overflow-y: auto;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column; /* Display categories in a column */
+    gap: 10px;
+}
+
+.menu button {
+    padding: 6px 10px; /* Adjust button padding as needed */
+    background-color:#0c83bbd8;
+    border: 1px solid #0056b3;
+    border-radius: 3px;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.menu button:hover {
+    background-color: #0056b3;
+}
+
+/* New styles for positioning the create trip button */
+.create-trip-container {
+    display: flex;
+    justify-content: flex-start;
+    position: absolute;
+    bottom: 20px;
+    left: 30px;
+    width: calc(100% - 60px);
+}
+
+.create-trip-container button {
+    width: 100%;
+}
