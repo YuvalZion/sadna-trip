@@ -25,6 +25,32 @@ if (empty($email) || empty($trip_num)) {
 $email = $conn->real_escape_string($email);
 $trip_num = intval($trip_num);
 
+// Fetch the start date and destination of the trip
+$sql = "SELECT date_start, date_end, destination FROM Trips WHERE trip_num=$trip_num";
+$result = $conn->query($sql);
+if ($result->num_rows == 0) {
+    die("Trip not found.");
+}
+$row = $result->fetch_assoc();
+$start_date = $row['date_start'];
+$end_date = $row['date_end'];
+$destination = $row['destination'];
+
+// Extract month and day from the start date
+$start_date_obj = new DateTime($start_date);
+$start_month_day = $start_date_obj->format('m-d');
+
+// Define the winter season ranges
+$winter_start = '12-21';
+$winter_end = '03-20';
+
+// Check if the start date falls within the winter season
+$is_winter_trip = false;
+if (($start_month_day >= $winter_start && $start_month_day <= '12-31') || 
+    ($start_month_day >= '01-01' && $start_month_day <= $winter_end)) {
+    $is_winter_trip = true;
+}
+
 // Check if the user already has entries in the user_checklist table for this trip
 $sql = "SELECT COUNT(*) AS count FROM user_checklist WHERE email='$email' AND trip_num=$trip_num";
 $result = $conn->query($sql);
@@ -35,13 +61,44 @@ if ($row['count'] == 0) {
     $sql = "INSERT INTO user_checklist (email, trip_num, item_name, isCheck)
             SELECT '$email', $trip_num, item_name, 0 FROM items_checklist WHERE item_type = 'basic'";
     $conn->query($sql);
+
+    if ($is_winter_trip) {
+        // Insert additional items for winter trips
+        $sql = "INSERT INTO user_checklist (email, trip_num, item_name, isCheck)
+                SELECT '$email', $trip_num, item_name, 0 FROM items_checklist WHERE item_type IN ('winter')";
+        $conn->query($sql);
+    }
+
+    // Insert additional items if the destination is New York
+    if ($destination === 'New York') {
+        $sql = "INSERT INTO user_checklist (email, trip_num, item_name, isCheck)
+                SELECT '$email', $trip_num, item_name, 0 FROM items_checklist WHERE item_type = 'New York'";
+        $conn->query($sql);
+    }
+}
+
+// Fetch the passport expiration date from the User_profile table
+$sql = "SELECT passport_expiration_date FROM User_profile WHERE email='$email'";
+$result = $conn->query($sql);
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $passport_expiration_date = new DateTime($row['passport_expiration_date']);
+    $trip_end_date = new DateTime($end_date);
+    $interval = $passport_expiration_date->diff($trip_end_date);
+
+    // Check if the passport's expiration date is less than the trip's end date by more than six months
+    if ($interval->invert == 0 || ($interval->y * 12 + $interval->m) <= 6) {
+        $sql = "INSERT INTO user_checklist (email, trip_num, item_name, isCheck)
+                SELECT '$email', $trip_num, item_name, 0 FROM items_checklist WHERE item_type = 'profile'";
+        $conn->query($sql);
+    }
 }
 
 // SQL query to retrieve items and their checked status for this email and trip
 $sql = "SELECT ic.category, uc.item_name, uc.isCheck
         FROM user_checklist uc
         JOIN items_checklist ic ON uc.item_name = ic.item_name
-        WHERE uc.email='$email' AND uc.trip_num=$trip_num AND ic.item_type = 'basic'
+        WHERE uc.email='$email' AND uc.trip_num=$trip_num
         ORDER BY ic.category";
 
 $result = $conn->query($sql);
@@ -57,9 +114,29 @@ if ($result->num_rows > 0) {
             'isCheck' => $row["isCheck"]
         ];
     }
-} else {
-    echo "0 results";
 }
+
+// Fetch user-specific items from the User_item table
+$sql = "SELECT item FROM User_item WHERE email='$email'";
+$result = $conn->query($sql);
+
+// Initialize an array for personal items
+$personal_items = [];
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $personal_items[] = [
+            'name' => $row['item'],
+            'isCheck' => 0
+        ];
+    }
+}
+
+// Add personal items to the items_by_category array under the 'personal items' category
+if (!empty($personal_items)) {
+    $items_by_category['פריטים אישיים'] = $personal_items;
+}
+
 $conn->close();
 ?>
 
@@ -82,6 +159,14 @@ $conn->close();
         }
         .hidden {
             display: none;
+        }
+        .remove-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 12px;
         }
     </style>
     <script>
@@ -127,12 +212,17 @@ $conn->close();
                     echo "<h2>" . htmlspecialchars($category) . "</h2><ul>";
                     foreach ($items as $item) {
                         $checked = $item['isCheck'] ? 'checked' : '';
-                        echo "<li><input type='checkbox' name='items[]' value='" . htmlspecialchars($item['name']) . "' $checked> " . htmlspecialchars($item['name']) . "</li>";
+                        echo "<li><input type='checkbox' name='items[]' value='" . htmlspecialchars($item['name']) . "' $checked> " . htmlspecialchars($item['name']) . " <button type='submit' name='delete_item' value='" . htmlspecialchars($item['name']) . "' class='remove-btn'>הסר</button></li>";
                     }
                     echo "</ul></div>";
                 }
                 ?>
-                <input type="submit" value="שמור רשימה">
+                <div>
+                    <h3>הוספת פריטים</h3>
+                    <input type="text" name="new_item" placeholder="New item name">
+                    <button type="submit" name="action" value="add_item">הוסף פריט</button>
+                </div>
+                <button type="submit" name="action" value="save_checklist">שמירת צ'ק ליסט</button>
             </form>
         </div>
     </div>
