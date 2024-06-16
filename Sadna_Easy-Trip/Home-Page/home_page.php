@@ -17,9 +17,7 @@
                 url = 'user_details.php?email=' + encodeURIComponent(email);
             } else if (buttonId === 'my-trip') {
                 url = 'my_trip.php?email=' + encodeURIComponent(email);
-            } else if (buttonId === 'checklist') {
-                url = '../Process 3 - Checklist/checklist.php?email=' + encodeURIComponent(email);
-            }
+            } 
 
             window.location.href = url;
         }
@@ -46,9 +44,7 @@
                 <button type="button" id="personal-profile" onclick="navigateToPage(this.id)">פרופיל אישי</button>
             </div>
             <br><br>
-            <div class="form-footer">
-                <button type="button" id="checklist" onclick="navigateToPage(this.id)">צ'ק ליסט</button>
-            </div>
+            
         </div>
     </div>
 </body>

@@ -13,32 +13,35 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Get the email from the previous page
+// Get the email and trip number from the previous page
 $email = isset($_GET['email']) ? $_GET['email'] : '';
-if (empty($email)) {
-    die("Email not provided.");
+$trip_num = isset($_GET['trip_num']) ? intval($_GET['trip_num']) : 0;
+
+if (empty($email) || empty($trip_num)) {
+    die("Email or Trip Number not provided.");
 }
 
 // Sanitize input
 $email = $conn->real_escape_string($email);
+$trip_num = intval($trip_num);
 
-// Check if the user already has entries in the user_checklist table
-$sql = "SELECT COUNT(*) AS count FROM user_checklist WHERE email='$email'";
+// Check if the user already has entries in the user_checklist table for this trip
+$sql = "SELECT COUNT(*) AS count FROM user_checklist WHERE email='$email' AND trip_num=$trip_num";
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
 
 if ($row['count'] == 0) {
     // If no entries, insert all items with isCheck set to 0
-    $sql = "INSERT INTO user_checklist (email, item_name, isCheck)
-            SELECT '$email', item_name, 0 FROM items_checklist WHERE item_type = 'basic'";
+    $sql = "INSERT INTO user_checklist (email, trip_num, item_name, isCheck)
+            SELECT '$email', $trip_num, item_name, 0 FROM items_checklist WHERE item_type = 'basic'";
     $conn->query($sql);
 }
 
-// SQL query to retrieve items and their checked status for this email
+// SQL query to retrieve items and their checked status for this email and trip
 $sql = "SELECT ic.category, uc.item_name, uc.isCheck
         FROM user_checklist uc
         JOIN items_checklist ic ON uc.item_name = ic.item_name
-        WHERE uc.email='$email' AND ic.item_type = 'basic'
+        WHERE uc.email='$email' AND uc.trip_num=$trip_num AND ic.item_type = 'basic'
         ORDER BY ic.category";
 
 $result = $conn->query($sql);
@@ -65,10 +68,8 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <title>Checklist</title>
-    <link rel="stylesheet" href="user_profile.css">
+    <link rel="stylesheet" href="checklist.css">
     <style>
-   
-       
         #menu {
             width: 200px;
             border-right: 1px solid #ccc;
@@ -116,9 +117,9 @@ $conn->close();
             </ul>
         </div>
         <div id="content">
-            
             <form method="post" action="save_checklist.php">
                 <input type="hidden" name="email" value="<?php echo htmlspecialchars($email); ?>">
+                <input type="hidden" name="trip_num" value="<?php echo htmlspecialchars($trip_num); ?>">
                 <?php
                 // Display items grouped by category with checkboxes
                 foreach ($items_by_category as $category => $items) {

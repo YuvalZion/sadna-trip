@@ -47,7 +47,7 @@ $tripNumbers = array_unique($tripNumbers);
 $trips = [];
 if (!empty($tripNumbers)) {
     $tripNumbersStr = implode(',', array_map('intval', $tripNumbers)); // Ensure the trip numbers are safe integers
-    $sql = "SELECT destination, date_start, date_end FROM Trips WHERE trip_num IN ($tripNumbersStr) ORDER BY date_start ASC";
+    $sql = "SELECT trip_num, destination, date_start, date_end FROM Trips WHERE trip_num IN ($tripNumbersStr) ORDER BY date_start ASC";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -58,8 +58,20 @@ if (!empty($tripNumbers)) {
 }
 
 $conn->close();
-?>
 
+// Separate trips into future and past
+$futureTrips = [];
+$pastTrips = [];
+$today = date('Y-m-d');
+
+foreach ($trips as $trip) {
+    if ($trip['date_end'] < $today) {
+        $pastTrips[] = $trip;
+    } else {
+        $futureTrips[] = $trip;
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="he">
@@ -68,30 +80,68 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>הטיולים שלי</title>
     <link rel="stylesheet" href="home_page.css">
+    <style>
+        .trip-block {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .trip-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .trip-buttons button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h2>הטיולים שלי</h2>
         <div class="form-container">
             <?php if (!empty($trips)): ?>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>יעד</th>
-                            <th>תאריך התחלה</th>
-                            <th>תאריך סיום</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($trips as $trip): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($trip['destination'], ENT_QUOTES, 'UTF-8'); ?></td>
-                                <td><?php echo htmlspecialchars($trip['date_start'], ENT_QUOTES, 'UTF-8'); ?></td>
-                                <td><?php echo htmlspecialchars($trip['date_end'], ENT_QUOTES, 'UTF-8'); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+               
+                
+
+                <h3>טיולים נוכחיים</h3>
+                <?php if (!empty($futureTrips)): ?>
+                    <?php foreach ($futureTrips as $trip): ?>
+                        <div class="trip-block">
+                            <h3><?php echo htmlspecialchars($trip['destination'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                            <p>תאריך התחלה: <?php echo htmlspecialchars($trip['date_start'], ENT_QUOTES, 'UTF-8'); ?></p>
+                            <p>תאריך סיום: <?php echo htmlspecialchars($trip['date_end'], ENT_QUOTES, 'UTF-8'); ?></p>
+                            <div class="trip-buttons">
+                                <button onclick="window.location.href='itinerary.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">מסלול</button>
+                                <button onclick="window.location.href='members.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">חברים</button>
+                                <button onclick="window.location.href='../Process 3 - Checklist/checklist.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">רשימת צ'ק</button>
+                               
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p>אין טיולים עתידיים להצגה.</p>
+                <?php endif; ?>
+
+                <h3>טיולים שהסתיימו</h3>
+                <?php if (!empty($pastTrips)): ?>
+                    <?php foreach ($pastTrips as $trip): ?>
+                        <div class="trip-block">
+                            <h3><?php echo htmlspecialchars($trip['destination'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                            <p>תאריך התחלה: <?php echo htmlspecialchars($trip['date_start'], ENT_QUOTES, 'UTF-8'); ?></p>
+                            <p>תאריך סיום: <?php echo htmlspecialchars($trip['date_end'], ENT_QUOTES, 'UTF-8'); ?></p>
+                            <div class="trip-buttons">
+                                <button onclick="window.location.href='itinerary.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">מסלול</button>
+                                <button onclick="window.location.href='members.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">חברים</button>
+                                <button onclick="window.location.href='../Process 3 - Checklist/checklist.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">רשימת צ'ק</button>
+                                <button onclick="window.location.href='rating.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">דירוג</button>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p>אין טיולים שהסתיימו להצגה.</p>
+                <?php endif; ?>
             <?php else: ?>
                 <p>אין טיולים להצגה.</p>
             <?php endif; ?>
