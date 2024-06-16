@@ -41,5 +41,5 @@ foreach ($items as $item) {
 $stmt->close();
 $conn->close();
 
-echo "Checklist saved successfully.";
+header("Location: ../Home-Page/home_page.php?email=" . urlencode($email));
 ?>
