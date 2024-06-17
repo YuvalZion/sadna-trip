@@ -24,6 +24,9 @@ $trip_num = $_GET['trip_num'];
 
 // Get the destination from the Trips table
 $destination_query = $conn->prepare("SELECT destination FROM Trips WHERE trip_num = ?");
+if (!$destination_query) {
+    die("Preparation failed: " . $conn->error);
+}
 $destination_query->bind_param("i", $trip_num);
 $destination_query->execute();
 $destination_query->bind_result($destination);
@@ -32,6 +35,9 @@ $destination_query->close();
 
 // Get all subcategories from the subcategory table for the given trip_num
 $subcategory_query = $conn->prepare("SELECT subcategory_name FROM subcategory WHERE trip_num = ?");
+if (!$subcategory_query) {
+    die("Preparation failed: " . $conn->error);
+}
 $subcategory_query->bind_param("i", $trip_num);
 $subcategory_query->execute();
 $subcategory_result = $subcategory_query->get_result();
@@ -43,14 +49,18 @@ while ($row = $subcategory_result->fetch_assoc()) {
 }
 $subcategory_query->close();
 
-// Get the filtered attractions from the attraction___new_data table for each subcategory
+// Get the filtered attractions from the Attraction_Data table for each subcategory
 $attractions = [];
 $unique_keys = [];
 $attractions_query = $conn->prepare("
     SELECT `Attraction Name`, `Latitude`, `Longitude`, `Average Time`
-    FROM attraction___new_data 
+    FROM Attraction_Data
     WHERE `Destination` = ? AND `Subcategory` = ?
 ");
+
+if (!$attractions_query) {
+    die("Preparation failed: " . $conn->error);
+}
 
 foreach ($subcategories as $subcategory) {
     $attractions_query->bind_param("ss", $destination, $subcategory);
@@ -81,8 +91,4 @@ $conn->close();
 // Print the attractions array as JavaScript
 header("Content-Type: application/javascript");
 echo "let attractions = " . json_encode($attractions) . ";";
-
-// Uncomment the following line if you want to redirect to another page after processing
-// header("Location: success.php"); // Change this to the page you want to redirect to
-// exit();
 ?>
