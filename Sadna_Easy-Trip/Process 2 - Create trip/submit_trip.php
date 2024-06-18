@@ -15,7 +15,7 @@ $email = $_POST['email'];
 $destination = $_POST['trip_destination'];
 $date_start = $_POST['start_date'];
 $date_end = $_POST['end_date'];
-$accommodation = $_POST['accommodation'];
+$hotel = $_POST['hotel'];
 $land_time = $_POST['outbound_flight'];
 $return_flight_time = $_POST['return_flight'];
 $airline = $_POST['airline'];
@@ -24,8 +24,8 @@ $trip_type = $_POST['trip_type'];
 
 
 // Insert data into database
-$sql = "INSERT INTO Trips (destination, date_start, date_end, accommodation, land_time, return_flight_time, airline, budget, trip_type, email)
-        VALUES ('$destination', '$date_start', '$date_end', '$accommodation', '$land_time', '$return_flight_time', '$airline', '$budget', '$trip_type', '$email')";
+$sql = "INSERT INTO Trips (destination, date_start, date_end, hotel, land_time, return_flight_time, airline, budget, trip_type, email)
+        VALUES ('$destination', '$date_start', '$date_end', '$hotel', '$land_time', '$return_flight_time', '$airline', '$budget', '$trip_type', '$email')";
 
 if ($conn->query($sql) === TRUE) {
     $trip_num = $conn->insert_id; // Get the last inserted id (trip_num)

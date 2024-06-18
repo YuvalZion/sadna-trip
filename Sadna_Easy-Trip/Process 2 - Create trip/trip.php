@@ -60,8 +60,8 @@
                 <input type="date" id="start_date" name="start_date" required>
                 <label for="end_date">תאריך סיום:</label>
                 <input type="date" id="end_date" name="end_date" required>
-                <label for="accommodation">מיקום לינה:</label>
-                <input type="text" id="accommodation" name="accommodation" required>
+                <label for="hotel">מיקום לינה:</label>
+                <input type="text" id="hotel" name="hotel" required>
 
                 <h3>פרטי טיסה</h3>
                 <label for="outbound_flight">זמן נחיתה:</label>
