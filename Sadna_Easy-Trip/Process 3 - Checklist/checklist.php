@@ -59,13 +59,14 @@ $row = $result->fetch_assoc();
 if ($row['count'] == 0) {
     // If no entries, insert all items with isCheck set to 0
     $sql = "INSERT INTO user_checklist (email, trip_num, item_name, isCheck)
-            SELECT '$email', $trip_num, item_name, 0 FROM items_checklist WHERE item_type = 'basic'";
+            SELECT '$email', $trip_num, item_name, 0 FROM items_checklist WHERE item_type = 'basic' OR item_type = '$email' AND category NOT IN ('פריטים שנוספו לטיול זה') ";
     $conn->query($sql);
+
 
     if ($is_winter_trip) {
         // Insert additional items for winter trips
         $sql = "INSERT INTO user_checklist (email, trip_num, item_name, isCheck)
-                SELECT '$email', $trip_num, item_name, 0 FROM items_checklist WHERE item_type IN ('winter')";
+                SELECT '$email', $trip_num, item_name, 0 FROM items_checklist WHERE item_type = 'winter'";
         $conn->query($sql);
     }
 
@@ -75,6 +76,63 @@ if ($row['count'] == 0) {
                 SELECT '$email', $trip_num, item_name, 0 FROM items_checklist WHERE item_type = 'New York'";
         $conn->query($sql);
     }
+}
+
+// Add sport items based on attraction types
+$sql = "
+    SELECT ad.Attraction_Number 
+    FROM Routes_trip rt
+    JOIN Attraction_Data ad ON rt.Attraction_Number = ad.Attraction_Number
+    WHERE rt.trip_num = $trip_num 
+    AND ad.Type_of_Attraction IN ('parks', 'field and nature trips', 'extreme and sports')";
+    
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    $sql = "
+        INSERT INTO user_checklist (email, trip_num, item_name, isCheck)
+        SELECT '$email', $trip_num, item_name, 0 
+        FROM items_checklist 
+        WHERE item_type = 'Sport'";
+    $conn->query($sql);
+}
+
+// Add Water items based on attraction types
+$sql = "
+    SELECT ad.Attraction_Number 
+    FROM Routes_trip rt
+    JOIN Attraction_Data ad ON rt.Attraction_Number = ad.Attraction_Number
+    WHERE rt.trip_num = $trip_num 
+    AND ad.Type_of_Attraction IN ('water activities') OR ad.Subcategory IN ('Water Park')";
+    
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    $sql = "
+        INSERT INTO user_checklist (email, trip_num, item_name, isCheck)
+        SELECT '$email', $trip_num, item_name, 0 
+        FROM items_checklist 
+        WHERE item_type = 'water'";
+    $conn->query($sql);
+}
+
+// Add skiing items based on attraction types
+$sql = "
+    SELECT ad.Attraction_Number 
+    FROM Routes_trip rt
+    JOIN Attraction_Data ad ON rt.Attraction_Number = ad.Attraction_Number
+    WHERE rt.trip_num = $trip_num 
+    AND ad.Subcategory IN ('Skiing')";
+    
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    $sql = "
+        INSERT INTO user_checklist (email, trip_num, item_name, isCheck)
+        SELECT '$email', $trip_num, item_name, 0 
+        FROM items_checklist 
+        WHERE item_type = 'Ski'";
+    $conn->query($sql);
 }
 
 // Fetch the passport expiration date from the User_profile table
@@ -94,14 +152,52 @@ if ($result->num_rows > 0) {
     }
 }
 
-// SQL query to retrieve items and their checked status for this email and trip
-$sql = "SELECT ic.category, uc.item_name, uc.isCheck
-        FROM user_checklist uc
-        JOIN items_checklist ic ON uc.item_name = ic.item_name
-        WHERE uc.email='$email' AND uc.trip_num=$trip_num
-        ORDER BY ic.category";
 
+$sql = " 
+SELECT DISTINCT 
+    ic.category, 
+    uc.isCheck, 
+    uc.item_name
+FROM 
+    user_checklist uc
+JOIN 
+    items_checklist ic ON uc.item_name = ic.item_name
+JOIN (
+    SELECT 
+        item_name, 
+        MIN(
+            CASE 
+                WHEN category = 'פריטים שנוספו לטיול זה' THEN 1
+                WHEN category = 'פריטים אישיים' THEN 2               
+                ELSE 0
+            END
+        ) as category_priority
+    FROM 
+        items_checklist
+    GROUP BY 
+        item_name
+) ic_prioritized ON ic.item_name = ic_prioritized.item_name
+AND (
+    (ic_prioritized.category_priority = 0 AND ic.category <> 'פריטים שנוספו לטיול זה')
+    OR
+    (ic_prioritized.category_priority = 1 AND ic.category = 'פריטים שנוספו לטיול זה')
+    OR
+    (ic_prioritized.category_priority = 2 AND ic.category = 'פריטים אישיים')
+)
+WHERE 
+    uc.trip_num = $trip_num
+    AND (
+        (ic.category = 'משימות קבוצתיות')
+        OR
+        (uc.email = '$email' AND (ic.category NOT IN ('פריטים אישיים') OR ic.item_type = '$email'))
+    )
+ORDER BY 
+    ic.category;
+";
+
+        
 $result = $conn->query($sql);
+
 
 // Initialize an array to hold items grouped by category
 $items_by_category = [];
@@ -116,27 +212,6 @@ if ($result->num_rows > 0) {
     }
 }
 
-// Fetch user-specific items from the User_item table
-$sql = "SELECT item FROM User_item WHERE email='$email'";
-$result = $conn->query($sql);
-
-// Initialize an array for personal items
-$personal_items = [];
-
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $personal_items[] = [
-            'name' => $row['item'],
-            'isCheck' => 0
-        ];
-    }
-}
-
-// Add personal items to the items_by_category array under the 'personal items' category
-if (!empty($personal_items)) {
-    $items_by_category['פריטים אישיים'] = $personal_items;
-}
-
 $conn->close();
 ?>
 
@@ -147,85 +222,134 @@ $conn->close();
     <title>Checklist</title>
     <link rel="stylesheet" href="checklist.css">
     <style>
-        #menu {
-            width: 200px;
-            border-right: 1px solid #ccc;
-            padding: 20px;
-            background-color: #f8f9fa;
+        .menu-container {
+            text-align: center;
+            margin-top: 20px;
+            width: 500px;
+            margin-right: -70px;
         }
-        #content {
-            padding: 20px;
-            flex-grow: 1;
+        
+        .category-btn {
+            display: block;
+            width: 500px;
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin: 10px auto;
+            text-align: center;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
         }
-        .hidden {
+        
+        .category-btn:hover {
+            background-color: darkgreen;
+        }
+
+        .category-content {
             display: none;
+            margin: 10px auto;
+            width: 50%;
+            text-align: left;
+            list-style: none;
         }
+
         .remove-btn {
             background-color: red;
             color: white;
             border: none;
             padding: 5px 10px;
+            margin-right: 10px;
             cursor: pointer;
             font-size: 12px;
         }
-    </style>
-    <script>
-        function showCategory(category) {
-            var categories = document.getElementsByClassName('category');
-            for (var i = 0; i < categories.length; i++) {
-                categories[i].classList.add('hidden');
-            }
-            document.getElementById('category-' + category).classList.remove('hidden');
+
+        button {
+            margin-top: 10px;
+            margin-right: 5px;
         }
 
-        // Automatically show the first category if any
-        document.addEventListener("DOMContentLoaded", function() {
-            var firstCategory = document.querySelector(".category");
-            if (firstCategory) {
-                firstCategory.classList.remove('hidden');
+        .items-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .items-list li {
+            text-align: right;
+        }
+
+        .items-list input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .item-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .item-container .item-name {
+            margin-left: 10px;
+        }
+    </style>
+    <script>
+        function toggleCategory(category) {
+            var allContent = document.querySelectorAll('.category-content');
+            allContent.forEach(function(content) {
+                if (content.id !== 'category-content-' + category) {
+                    content.style.display = 'none';
+                }
+            });
+            var content = document.getElementById('category-content-' + category);
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+            } else {
+                content.style.display = 'block';
             }
-        });
+        }
     </script>
 </head>
 <body>
     <div class="container">
+        <h2>צ'ק ליסט</h2>
         <div class="form-container">
-        <div id="menu">
-            <h2>קטגוריות</h2>
-            <ul>
+            <div class="menu-container">
                 <?php
-                // Display the categories in the side menu
+                // Display the categories in the center of the page as green buttons
                 foreach (array_keys($items_by_category) as $category) {
-                    echo "<li><a href='#' onclick=\"showCategory('" . htmlspecialchars($category) . "')\">" . htmlspecialchars($category) . "</a></li>";
-                }
-                ?>
-            </ul>
-        </div>
-        <div id="content">
-            <form method="post" action="save_checklist.php">
-                <input type="hidden" name="email" value="<?php echo htmlspecialchars($email); ?>">
-                <input type="hidden" name="trip_num" value="<?php echo htmlspecialchars($trip_num); ?>">
-                <?php
-                // Display items grouped by category with checkboxes
-                foreach ($items_by_category as $category => $items) {
-                    echo "<div id='category-" . htmlspecialchars($category) . "' class='category hidden'>";
-                    echo "<h2>" . htmlspecialchars($category) . "</h2><ul>";
-                    foreach ($items as $item) {
+                    echo "<button class='category-btn' onclick=\"toggleCategory('" . htmlspecialchars($category) . "')\">" . htmlspecialchars($category) . "</button>";
+                    echo "<div id='category-content-" . htmlspecialchars($category) . "' class='category-content'>";
+                    echo "<ul class='items-list'>";
+                    foreach ($items_by_category[$category] as $item) {
                         $checked = $item['isCheck'] ? 'checked' : '';
-                        echo "<li><input type='checkbox' name='items[]' value='" . htmlspecialchars($item['name']) . "' $checked> " . htmlspecialchars($item['name']) . " <button type='submit' name='delete_item' value='" . htmlspecialchars($item['name']) . "' class='remove-btn'>הסר</button></li>";
+                        echo "<li class='item-container'><button type='submit' name='delete_item' value='" . htmlspecialchars($item['name']) . "' class='remove-btn'>הסר</button><input type='checkbox' name='items[]' value='" . htmlspecialchars($item['name']) . "' $checked> <span class='item-name'>" . htmlspecialchars($item['name']) . "</span></li>";
                     }
                     echo "</ul></div>";
                 }
                 ?>
-                <div>
-                    <h3>הוספת פריטים</h3>
-                    <input type="text" name="new_item" placeholder="New item name">
-                    <button type="submit" name="action" value="add_item">הוסף פריט</button>
-                </div>
-                <button type="submit" name="action" value="save_checklist">שמירת צ'ק ליסט</button>
-            </form>
+            </div>
+            <div id="content">
+                <form method="post" action="save_checklist.php">
+                    <input type="hidden" name="email" value="<?php echo htmlspecialchars($email); ?>">
+                    <input type="hidden" name="trip_num" value="<?php echo htmlspecialchars($trip_num); ?>">
+                    <div>
+                        <h3>הוספת פריטים</h3>
+                        <input type="text" name="new_item" placeholder="שם פריט חדש">
+                        <button type="submit" name="action" value="add_item">+</button>
+                    </div>
+                    <div>
+                        <h3>הוספת משימות קבוצתיות</h3>
+                        <input type="text" name="new_group_item" placeholder="שם פריט חדש">
+                        <button type="submit" name="action" value="add_group_item">+</button>
+                    </div>
+                    <div class="form-footer">
+                    <button type="submit" name="action" value="save_checklist">שמירת צ'ק ליסט</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
     </div>
 </body>
 </html>

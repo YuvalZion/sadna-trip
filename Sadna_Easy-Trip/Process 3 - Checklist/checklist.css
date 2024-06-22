@@ -42,7 +42,7 @@ label {
 }
 
 input[type="text"], input[type="tel"], input[type="date"], input[type="email"], input[type="password"], input[type="file"] {
-    width: 100%;
+    width: 280px;
     padding: 10px;
     margin-bottom: 20px;
     border: 1px solid #ced4da;
@@ -134,5 +134,5 @@ button:hover {
     font-size: 16px;
     text-align: center;
     margin: 10px;
-    transition: background-color 0.3s, color 
+    transition: background-color 0.3s, color
 }

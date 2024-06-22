@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['email'])) {
     foreach ($items as $item) {
         if (!empty($item)) {
             // SQL query to insert data into the User_item table
-            $sql = "INSERT INTO User_item (email, item) VALUES ('$email', '$item')";
+            $sql = "INSERT INTO items_checklist (item_name, item_type, trip_num,category ) VALUES ('$item', '$email', -1,'פריטים אישיים')";
 
             if ($conn->query($sql) !== TRUE) {
                 $success = false;
