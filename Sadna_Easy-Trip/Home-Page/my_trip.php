@@ -71,6 +71,12 @@ foreach ($trips as $trip) {
         $futureTrips[] = $trip;
     }
 }
+
+// Function to format date to dd/mm/yyyy
+function formatDate($date) {
+    $dateObj = new DateTime($date);
+    return $dateObj->format('d/m/Y');
+}
 ?>
 
 <!DOCTYPE html>
@@ -80,71 +86,60 @@ foreach ($trips as $trip) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>הטיולים שלי</title>
     <link rel="stylesheet" href="home_page.css">
-    <style>
-        .trip-block {
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin: 10px 0;
-        }
-        .trip-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .trip-buttons button {
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-    </style>
+  
 </head>
 <body>
     <div class="container">
+      <div class="logo-image"> <img src="../images/logo.jpg" alt="Logo"></div>
         <h2>הטיולים שלי</h2>
         <div class="form-container">
             <?php if (!empty($trips)): ?>
-               
-                
-
-                <h3>טיולים נוכחיים</h3>
                 <?php if (!empty($futureTrips)): ?>
+                    <h3>טיולים עתידיים</h3>
                     <?php foreach ($futureTrips as $trip): ?>
                         <div class="trip-block">
-                            <h3><?php echo htmlspecialchars($trip['destination'], ENT_QUOTES, 'UTF-8'); ?></h3>
-                            <p>תאריך התחלה: <?php echo htmlspecialchars($trip['date_start'], ENT_QUOTES, 'UTF-8'); ?></p>
-                            <p>תאריך סיום: <?php echo htmlspecialchars($trip['date_end'], ENT_QUOTES, 'UTF-8'); ?></p>
+                            <h4><?php echo htmlspecialchars($trip['destination'], ENT_QUOTES, 'UTF-8'); ?> 
+                                <?php echo htmlspecialchars(formatDate($trip['date_start']), ENT_QUOTES, 'UTF-8'); ?> - 
+                                <?php echo htmlspecialchars(formatDate($trip['date_end']), ENT_QUOTES, 'UTF-8'); ?>
+                            </h4>
                             <div class="trip-buttons">
-                                <button onclick="window.location.href='itinerary.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">מסלול</button>
-                                <button onclick="window.location.href='members.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">חברים</button>
-                                <button onclick="window.location.href='../Process 3 - Checklist/checklist.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">רשימת צ'ק</button>
-                               
+                                <button onclick="window.location.href='present_route.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">מסלול הטיול</button>
+                                <button onclick="window.location.href='group.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">חברים </button>
+                                <button onclick="window.location.href='../Process 3 - Checklist/checklist.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">צ'ק ליסט </button>
+                                
                             </div>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <p>אין טיולים עתידיים להצגה.</p>
+                    <p> </p>
                 <?php endif; ?>
 
-                <h3>טיולים שהסתיימו</h3>
                 <?php if (!empty($pastTrips)): ?>
+                    <h3>טיולי עבר</h3>
                     <?php foreach ($pastTrips as $trip): ?>
                         <div class="trip-block">
-                            <h3><?php echo htmlspecialchars($trip['destination'], ENT_QUOTES, 'UTF-8'); ?></h3>
-                            <p>תאריך התחלה: <?php echo htmlspecialchars($trip['date_start'], ENT_QUOTES, 'UTF-8'); ?></p>
-                            <p>תאריך סיום: <?php echo htmlspecialchars($trip['date_end'], ENT_QUOTES, 'UTF-8'); ?></p>
+                            <h4><?php echo htmlspecialchars($trip['destination'], ENT_QUOTES, 'UTF-8'); ?> 
+                                <?php echo htmlspecialchars(formatDate($trip['date_start']), ENT_QUOTES, 'UTF-8'); ?> - 
+                                <?php echo htmlspecialchars(formatDate($trip['date_end']), ENT_QUOTES, 'UTF-8'); ?>
+                            </h4>
                             <div class="trip-buttons">
-                                <button onclick="window.location.href='itinerary.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">מסלול</button>
-                                <button onclick="window.location.href='members.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">חברים</button>
-                                <button onclick="window.location.href='../Process 3 - Checklist/checklist.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">רשימת צ'ק</button>
+                                <button onclick="window.location.href='present_route.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'"> מסלול הטיול</button>
+                                <button onclick="window.location.href='group.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">חברים </button>
+                                <button onclick="window.location.href='../Process 3 - Checklist/checklist.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">צ'ק ליסט</button>
                                 <button onclick="window.location.href='rating.php?trip_num=<?php echo $trip['trip_num']; ?>&email=<?php echo urlencode($email); ?>'">דירוג</button>
                             </div>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <p>אין טיולים שהסתיימו להצגה.</p>
+                    <p> </p>
                 <?php endif; ?>
             <?php else: ?>
-                <p>אין טיולים להצגה.</p>
+                <h3>אין טיולים להצגה.</h3>
             <?php endif; ?>
+            
+            <div class="form-footer">
+                <a href="home_page.php?email=<?php echo urlencode($email); ?>" class="home-button">חזרה לדף הבית</a>
+            </div>
         </div>
     </div>
 </body>
