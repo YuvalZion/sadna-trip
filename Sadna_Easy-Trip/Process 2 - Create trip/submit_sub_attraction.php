@@ -1,9 +1,9 @@
 <?php
+// Database connection settings
 $servername = "localhost";
 $username = "zlilma_admin_smy";
 $password = "easy_trip123";
 $dbname = "zlilma_Easy_Trip";
-
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -12,8 +12,7 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-
-// Retrieve trip_num from the form
+// Get the trip_num obtained from the previous page using Post
 $trip_num = $_POST['trip_num'];
 
 // Define an array to hold the selected subcategories
@@ -28,8 +27,6 @@ foreach ($categories as $category) {
         }
     }
 }
-
-
 
 // Prepare and bind the statement
 $stmt = $conn->prepare("INSERT INTO subcategory (subcategory_name, trip_num) VALUES (?, ?)");

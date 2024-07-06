@@ -5,10 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>טיול חדש - בחירת תתי קטגוריות</title>
     <link rel="stylesheet" href="trip.css">
+    <script>
+        // Function to toggle visibility of sub-forms based on category
+        function toggleSubForm(category) {
+            // Get all sub-forms
+            var subForms = document.querySelectorAll('.sub-form');
+        
+            // Hide all sub-forms except the one with the given category
+            subForms.forEach(function(subForm) {
+                if (subForm.id === category) {
+                    subForm.style.display = 'block';
+                } else {
+                    subForm.style.display = 'none';
+                }
+            });
+        }
+        // Function to validate form submission
+        function validateForm() {
+            // Get all checkboxes
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            var checkedCount = 0;
+            
+            // Count checked checkboxes
+            checkboxes.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkedCount++;
+                }
+            });
+            
+            // Validate if at least 10 checkboxes are checked
+            if (checkedCount < 10) {
+                alert("יש לסמן לפחות 10 אטרקציות");
+                return false; // Prevent form submission
+            }
+            return true; // Allow form submission
+        }
+    </script>
 </head>
 <body>
     <div id="form4" class="container">
+        <div class="logo-image"> <img src="../images/logo.jpg" alt="Logo"></div>
         <h2>בחירת תתי קטגוריות</h2>
+        <h3>סימון האטרקציות שישולבו במסלול הטיול</h3>
+        <h5>* יש לסמן לפחות 10 אטרקציות</h5>
         <div class="form-container">
             <form id="profiles-form" action="submit_sub_attraction.php" method="post" onsubmit="return validateForm()">
                 <input type="hidden" name="trip_num" value="<?php echo htmlspecialchars($_GET['trip_num']); ?>">
@@ -121,41 +160,24 @@
                     <div id="restaurant-types" class="sub-form" style="display: none;">
                         <label>סוגי מסעדות:</label>
                         <label><input type="checkbox" name="restaurants[]" value="Italian">איטלקי</label>
-                        <label><input type="checkbox" name="restaurants[]" value="Chinese">סיני</label>
+                        <label><input type="checkbox" name="restaurants[]" value="Asian">סיני</label>
                         <label><input type="checkbox" name="restaurants[]" value="Thai">תאילנדי</label>
-                        <label><input type="checkbox" name="restaurants[]" value="Meats">בשרי</label>
-                        <label><input type="checkbox" name="restaurants[]" value="Cafes">בתי קפה</label>
+                        <label><input type="checkbox" name="restaurants[]" value="Meat">בשרי</label>
+                        <label><input type="checkbox" name="restaurants[]" value="Cafe">בתי קפה</label>
                         <label><input type="checkbox" name="restaurants[]" value="Vegan">טבעוני</label>
                         <label><input type="checkbox" name="restaurants[]" value="Indian">הודי</label>
                         <label><input type="checkbox" name="restaurants[]" value="Mediterranean">ים תיכוני</label>
-                        <label><input type="checkbox" name="restaurants[]" value="Fast_food">אוכל מהיר</label>
+                        <label><input type="checkbox" name="restaurants[]" value="Fast Food">אוכל מהיר</label>
                         <label><input type="checkbox" name="restaurants[]" value="Sweets">מתוקים</label>
                         <label><input type="checkbox" name="restaurants[]" value="Fish">דגים</label>
                         <label><input type="checkbox" name="restaurants[]" value="Mexican">מקסיקני</label>
                     </div>
                 </div>
-                
                 <div class="form-footer">
                     <button type="submit">יצירת טיול</button>
                 </div>
             </form>
         </div>
     </div>
-    
-    <script>
-        function toggleSubForm(category) {
-            // Get all sub-forms
-            var subForms = document.querySelectorAll('.sub-form');
-        
-            // Hide all sub-forms except the one with the given category
-            subForms.forEach(function(subForm) {
-                if (subForm.id === category) {
-                    subForm.style.display = 'block';
-                } else {
-                    subForm.style.display = 'none';
-                }
-            });
-        }
-    </script>
 </body>
 </html>
