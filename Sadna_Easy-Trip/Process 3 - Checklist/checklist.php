@@ -36,6 +36,10 @@ $start_date = $row['date_start'];
 $end_date = $row['date_end'];
 $destination = $row['destination'];
 
+// Format the dates to dd/mm/yyyy
+$start_date_formatted = (new DateTime($start_date))->format('d/m/Y');
+$end_date_formatted = (new DateTime($end_date))->format('d/m/Y');
+
 // Extract month and day from the start date
 $start_date_obj = new DateTime($start_date);
 $start_month_day = $start_date_obj->format('m-d');
@@ -152,7 +156,7 @@ if ($result->num_rows > 0) {
     }
 }
 
-
+// A query to retrieve the relevant items and unify them according to the categories
 $sql = " 
 SELECT DISTINCT 
     ic.category, 
@@ -198,7 +202,6 @@ ORDER BY
         
 $result = $conn->query($sql);
 
-
 // Initialize an array to hold items grouped by category
 $items_by_category = [];
 
@@ -219,90 +222,23 @@ $conn->close();
 <html lang="he">
 <head>
     <meta charset="UTF-8">
-    <title>Checklist</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>צ'ק ליסט</title>
     <link rel="stylesheet" href="checklist.css">
-    <style>
-        .menu-container {
-            text-align: center;
-            margin-top: 20px;
-            width: 500px;
-            margin-right: -70px;
-        }
-        
-        .category-btn {
-            display: block;
-            width: 500px;
-            background-color: green;
-            color: white;
-            border: none;
-            padding: 10px;
-            margin: 10px auto;
-            text-align: center;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-        }
-        
-        .category-btn:hover {
-            background-color: darkgreen;
-        }
-
-        .category-content {
-            display: none;
-            margin: 10px auto;
-            width: 50%;
-            text-align: left;
-            list-style: none;
-        }
-
-        .remove-btn {
-            background-color: red;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            margin-right: 10px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        button {
-            margin-top: 10px;
-            margin-right: 5px;
-        }
-
-        .items-list {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .items-list li {
-            text-align: right;
-        }
-
-        .items-list input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-        }
-
-        .item-container {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-        }
-
-        .item-container .item-name {
-            margin-left: 10px;
-        }
-    </style>
     <script>
         function toggleCategory(category) {
+             // Select all elements with class 'category-content'
             var allContent = document.querySelectorAll('.category-content');
+            // Loop through each element with class 'category-content'
             allContent.forEach(function(content) {
+                // Hide content that does not match the specified category
                 if (content.id !== 'category-content-' + category) {
                     content.style.display = 'none';
                 }
             });
+             // Select the content to toggle based on the given category
             var content = document.getElementById('category-content-' + category);
+            // Toggle the display of the selected content
             if (content.style.display === 'block') {
                 content.style.display = 'none';
             } else {
@@ -313,27 +249,31 @@ $conn->close();
 </head>
 <body>
     <div class="container">
+        <div class="logo-image"> <img src="../images/logo.jpg" alt="Logo"></div>
         <h2>צ'ק ליסט</h2>
         <div class="form-container">
+            <h3><?php echo htmlspecialchars($destination) . " " . htmlspecialchars($start_date_formatted) . " - " . htmlspecialchars($end_date_formatted); ?></h3>
             <div class="menu-container">
-                <?php
-                // Display the categories in the center of the page as green buttons
-                foreach (array_keys($items_by_category) as $category) {
-                    echo "<button class='category-btn' onclick=\"toggleCategory('" . htmlspecialchars($category) . "')\">" . htmlspecialchars($category) . "</button>";
-                    echo "<div id='category-content-" . htmlspecialchars($category) . "' class='category-content'>";
-                    echo "<ul class='items-list'>";
-                    foreach ($items_by_category[$category] as $item) {
-                        $checked = $item['isCheck'] ? 'checked' : '';
-                        echo "<li class='item-container'><button type='submit' name='delete_item' value='" . htmlspecialchars($item['name']) . "' class='remove-btn'>הסר</button><input type='checkbox' name='items[]' value='" . htmlspecialchars($item['name']) . "' $checked> <span class='item-name'>" . htmlspecialchars($item['name']) . "</span></li>";
-                    }
-                    echo "</ul></div>";
-                }
-                ?>
-            </div>
-            <div id="content">
                 <form method="post" action="save_checklist.php">
                     <input type="hidden" name="email" value="<?php echo htmlspecialchars($email); ?>">
                     <input type="hidden" name="trip_num" value="<?php echo htmlspecialchars($trip_num); ?>">
+                    
+                    <?php
+                    // Display the categories in the center of the page as green buttons
+                    foreach (array_keys($items_by_category) as $category) {
+                        echo "<button type='button' class='category-btn' onclick=\"toggleCategory('" . htmlspecialchars($category) . "')\">" . htmlspecialchars($category) . "</button>";
+                        echo "<div id='category-content-" . htmlspecialchars($category) . "' class='category-content'>";
+                        echo "<ul class='items-list'>";
+                        foreach ($items_by_category[$category] as $item) {
+                            $checked = $item['isCheck'] ? 'checked' : '';
+                            echo "<li class='item-container'>";
+                            echo "<button type='submit' name='delete_item' value='" . htmlspecialchars($item['name']) . "' class='remove-btn'>הסר</button>";
+                            echo "<input type='checkbox' name='items[]' value='" . htmlspecialchars($item['name']) . "' $checked> <span class='item-name'>" . htmlspecialchars($item['name']) . "</span>";
+                            echo "</li>";
+                        }
+                        echo "</ul></div>";
+                    }
+                    ?>
                     <div>
                         <h3>הוספת פריטים</h3>
                         <input type="text" name="new_item" placeholder="שם פריט חדש">
@@ -345,7 +285,7 @@ $conn->close();
                         <button type="submit" name="action" value="add_group_item">+</button>
                     </div>
                     <div class="form-footer">
-                    <button type="submit" name="action" value="save_checklist">שמירת צ'ק ליסט</button>
+                        <button type="submit" name="action" value="save_checklist"> שמירת שינויים <br>ומעבר לדף הקודם</button>
                     </div>
                 </form>
             </div>

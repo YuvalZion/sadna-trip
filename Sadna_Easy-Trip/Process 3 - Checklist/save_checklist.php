@@ -12,7 +12,7 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-
+// Retrieve form data from POST request
 $email = $_POST['email'];
 $trip_num = intval($_POST['trip_num']);
 $action = isset($_POST['action']) ? $_POST['action'] : '';
@@ -64,7 +64,7 @@ if ($action === 'add_item') {
     // Redirect back to checklist.php after adding the group item
     header("Location: checklist.php?email=$email&trip_num=$trip_num");
     exit();
-}elseif ($action === 'save_checklist') {
+} elseif ($action === 'save_checklist') {
     // Reset all checks for the current user and trip
     $stmt = $conn->prepare("UPDATE user_checklist SET isCheck = 0 WHERE email = ? AND trip_num = ?");
     $stmt->bind_param("si", $email, $trip_num);
