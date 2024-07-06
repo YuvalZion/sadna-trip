@@ -1,8 +1,6 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #e9ecef;
-    margin: 0;
-    padding: 0;
     direction: rtl;
     display: flex;
     justify-content: center;
@@ -10,6 +8,7 @@ body {
     box-sizing: border-box;
     min-height: 100vh;
 }
+
 .container {
     width: 400px;
     min-height: 800px;
@@ -19,24 +18,25 @@ body {
     border-radius: 10px;
     overflow: hidden;
 }
+
 .container h2 {
     text-align: center;
     color: #343a40;
-    background: #007bff;
+    background: #04274d;
     color: white;
     padding: 20px 0;
     margin: 0;
 }
+
 .form-container {
     padding: 30px;
+    margin-top: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-label {
-    display: block;
-    margin-bottom: 10px;
-    color: #495057;
-    font-weight: bold;
-}
-input[type="text"], input[type="tel"], input[type="date"], input[type="email"], input[type="password"], input[type="file"] {
+
+input[type="email"], input[type="password"] {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
@@ -45,14 +45,39 @@ input[type="text"], input[type="tel"], input[type="date"], input[type="email"], 
     box-sizing: border-box;
     font-size: 16px;
 }
+
 .form-footer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     margin-top: 20px;
 }
 
+.sign-up {
+    text-align: center;
+    margin-top: 5px; 
+}
+        
+.sign-up a {
+    color: rgba(0, 0, 0, 0.712);; 
+    text-decoration: underline; 
+    font-weight: bold; 
+    font-size: 16px; 
+}
+    
+.sign-up a:hover {
+    color: rgba(0, 0, 0, 0.5);
+}
+        
+label {
+    display: block;
+    margin-bottom: 10px;
+    color: #495057;
+    font-weight: bold;
+}
+        
 button {
-    background-color: #007bff;
+    width:320px;
+    background-color: #04274de8;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -61,71 +86,14 @@ button {
     font-size: 16px;
     transition: background-color 0.3s;
 }
+        
 button:hover {
     background-color: #0056b3;
 }
-.preview-container {
-    text-align: center;
-    margin-top: 20px;
-}
-.preview-container img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-    border: 2px solid #ced4da;
-    padding: 5px;
-}
-.attraction {
-    margin-bottom: 20px;
-}
-.attraction label {
-    display: inline-block;
-    width: 150px;
-}
-.attraction input[type="range"] {
-    width: calc(100% - 180px);
-    margin-right: 10px;
-}
-.attraction span {
-    display: inline-block;
-    width: 30px;
-    text-align: center;
-    font-weight: bold;
-}
-
-.additional-text button {
-    background-color: #e74c3c;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    position: absolute;
-    margin-top: -33px;
     
-    margin-right:-295px;
-}
-
-.additional-text button:hover {
-    background-color: #c0392b;
-}
-
-.fixed-button {
-position: fixed;
-bottom: 50px;
-right: 10px;
-background-color: #007bff;
-color: white;
-padding: 1% 2%;
-border-radius: 5px;
-font-size: 16px;
-text-align: center;
-margin: 10px;
-transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-}
-
-/* Hover effect for fixed button */
-.fixed-button:hover {
-background-color: #0056b3;
+.logo-image img {
+    width: 250px;
+    height: 50px;
+    margin-right: 17%;
+    margin-top: 15px;
 }
