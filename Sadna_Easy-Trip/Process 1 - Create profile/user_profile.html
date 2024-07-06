@@ -5,27 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>הרשמה - פרטים אישיים</title>
     <link rel="stylesheet" href="user_profile.css">
-    <script src="user_profile.js"></script>
+    <script>
+        function validateForm() {
+            // Retrieve the value of the fields entered by the user on which validation is performed
+            const dob = document.getElementById('dob').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+            // Get the current date
+            const today = new Date();
+    
+            // Validate Phone Number
+            // Check if the phone number contains exactly 10 digits
+            const phonePattern = /^\d{10}$/;
+            if (!phonePattern.test(phone)) {
+                alert("מספר טלפון חייב להכיל 10 ספרות");
+                return false;
+            }
+            
+            // Validate Date of Birth
+            // Check if the age is at least 14 years
+            const birthDate = new Date(dob);
+            const ageDiff = today.getFullYear() - birthDate.getFullYear();
+            const ageMonthDiff = today.getMonth() - birthDate.getMonth();
+            const ageDayDiff = today.getDate() - birthDate.getDate();
+            
+            // Calculate exact age and check if the user is at least 14 years old
+            if (ageDiff < 14 || (ageDiff === 14 && ageMonthDiff < 0) || (ageDiff === 14 && ageMonthDiff === 0 && ageDayDiff < 0)) {
+                alert("המשתמש צריך להיות בן 14 שנים לפחות");
+                return false;
+            }
+        
+            // Validate Email Uniqueness
+            // Create a new XMLHttpRequest object
+            const xhr = new XMLHttpRequest();
+            // Initialize a synchronous POST request to the server-side script
+            xhr.open('POST', 'check_email.php', false);  
+            // Set the request header to indicate form data
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            // Send the email value to the server
+            xhr.send('email=' + encodeURIComponent(email));
+        
+            // Check if the server response indicates the email already exists
+            if (xhr.responseText === 'exists') {
+                alert("האימייל כבר קיים במערכת, הכנס אימייל אחר.");
+                return false;
+            }
+            
+            // Validate Password
+            // The password must include at least 6 characters (at least one letter and one number)
+            const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+            if (!passwordPattern.test(password)) {
+                alert("הסיסמה חייבת להכיל לפחות 6 תווים ולכלול לפחות אות אחת ומספר אחד.");
+                return false;
+            }
+            // If all validations pass, allow the form to be submitted
+            return true;
+        }
+    </script>
 </head>
+
 <body>
     <div id="form1" class="container">
+        <div class="logo-image"> <img src="../images/logo.jpg" alt="Logo"></div>
         <h2>פרטים אישיים </h2>
         <div class="form-container">
-            <form id="user-form" action="user_profile.php" method="post" onsubmit="return validateForm()">
+            <!-- Form element with method POST and action to submit_profile.php -->
+            <form id="user-form" action="submit_profile.php" method="post" onsubmit="return validateForm()">
+                
+                <!-- Full Name input field -->
                 <label for="fullname">שם מלא:</label>
                 <input type="text" id="fullname" name="fullname" required>
+                
+                <!-- Phone Number input field -->
                 <label for="phone">מספר טלפון:</label>
-                <input type="tel" id="phone" name="phone" required>
+                <input type="string" id="phone" name="phone" required>
+                
+                <!-- Date of Birth input field -->
                 <label for="dob">תאריך לידה:</label>
                 <input type="date" id="dob" name="dob" required>
+                
+                <!-- Passport Expiry Date input field -->
                 <label for="passport_exp">תאריך תפוגת דרכון:</label>
                 <input type="date" id="passport_exp" name="passport_exp" required>
+                
+                <!-- Email input field -->
                 <label for="email">אימייל:</label>
                 <input type="email" id="email" name="email" required>
+                
+                <!-- Password input field -->
                 <label for="password">סיסמה:</label>
                 <input type="password" id="password" name="password" required>
-                <div class="form-footer">
-                    <input id="sub" type="submit" value="Submit">
+                
+                <!-- Submit button -->
+                 <div class="form-footer">
+                    <button type="submit">המשך</button>
                 </div>
             </form>
         </div>

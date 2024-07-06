@@ -3,58 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> הרשמה - פריטים לצ'ק ליסט  </title>
+    <title>הרשמה - פריטים לצ'ק ליסט</title>
     <link rel="stylesheet" href="user_profile.css">
+    <script>
+        // Function to add a new item input field
+        function addMoreItem() {
+            var itemsContainer = document.getElementById('items-container');
+            // Create a new div element for the additional item
+            var newDiv = document.createElement('div');
+            newDiv.setAttribute('class', 'additional-text'); 
+            // Create a label element for the item
+            var newLabel = document.createElement('label');
+            newLabel.textContent = 'פריט'; 
+            // Create an input element for the item
+            var newInput = document.createElement('input');
+            newInput.setAttribute('type', 'text'); 
+            newInput.setAttribute('name', 'items[]'); 
+            // Create a button to remove the item
+            var removeButton = document.createElement('button');
+            removeButton.setAttribute('type', 'button'); 
+            removeButton.setAttribute('onclick', 'removeItem(this)'); // Call removeItem function on click
+            removeButton.textContent = '-'; 
+            // Append label, input, and remove button to the new div
+            newDiv.appendChild(newLabel);
+            newDiv.appendChild(newInput);
+            newDiv.appendChild(removeButton);
+            // Append the new div to the items container
+            itemsContainer.appendChild(newDiv);
+
+            // Scroll the window to show the newly added item
+            window.scrollBy(0, newDiv.clientHeight);
+        }
+
+        // Function to remove an item
+        function removeItem(button) {
+            button.parentNode.remove(); // Remove the parent div of the button 
+        }
+    </script>
 </head>
+
 <body>
     <div id="form5" class="container">
-        <h2> האם יש פריטים שהיית רוצה <br>שייכנסו אל הצ'ק ליסט?  </h2>
+        <div class="logo-image"> <img src="../images/logo.jpg" alt="Logo"></div>
+        <h2>הוספת פריטים</h2>
+        <h4>האם יש פריטים שהיית רוצה שייכנסו אל הצ'ק ליסט? כגון תרופות קבועות, חיסונים שיש לבצע וכדומה</h4>
         <div class="form-container">
             <form id="about-form" method="post" action="submit_item.php">
-                <label for="about">כגון תרופות קבועות, חיסונים שיש לבצע וכדומה</label>
                 <div id="items-container">
+                    <!-- Label and input for the first item -->
                     <label for="item">פריט</label>
-                    <input type="text" id="item" name="items[]" required>
+                    <input type="text" id="item" name="items[]">
                 </div>
+                <!-- Button to add more items -->
                 <button type="button" onclick="addMoreItem()">+</button>
                 
                 <!-- Hidden field to hold the email passed from the previous form -->
                 <input type="hidden" id="email" name="email" value="<?php echo htmlspecialchars($_GET['email']); ?>"><br><br>
                 
+                <!-- Form submission button -->
                 <div class="form-footer">
-                    <button type="submit">סיום</button>
+                    <button type="submit">יצירת פרופיל</button>
                 </div>
             </form>
         </div>
     </div>
-    <script>
-        function addMoreItem() {
-            var itemsContainer = document.getElementById('items-container');
-
-            var newDiv = document.createElement('div');
-            newDiv.setAttribute('class', 'additional-text');
-            var newLabel = document.createElement('label');
-            newLabel.textContent = 'פריט';
-            var newInput = document.createElement('input');
-            newInput.setAttribute('type', 'text');
-            newInput.setAttribute('name', 'items[]');
-            newInput.setAttribute('required', 'required'); // Make the dynamically added field required
-            var removeButton = document.createElement('button');
-            removeButton.setAttribute('type', 'button');
-            removeButton.setAttribute('onclick', 'removeItem(this)');
-            removeButton.textContent = '-';
-            newDiv.appendChild(newLabel);
-            newDiv.appendChild(newInput);
-            newDiv.appendChild(removeButton);
-            itemsContainer.appendChild(newDiv);
-
-            // Increase the height of the page to accommodate the new text box
-            window.scrollBy(0, newDiv.clientHeight);
-        }
-
-        function removeItem(button) {
-            button.parentNode.remove();
-        }
-    </script>
 </body>
 </html>

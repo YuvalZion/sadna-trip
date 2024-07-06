@@ -37,7 +37,7 @@ foreach ($attractionNames as $attractionKey => $attractionName) {
     if (isset($_POST[$attractionKey])) {
         $rate = intval($_POST[$attractionKey]); // Convert rating to integer
 
-        // SQL query to insert data into the attractions_rate table
+        // SQL query to insert data into the Attractions_rate table
         $sql = "INSERT INTO Attractions_rate (email, Attraction_name, rate) VALUES ('$email', '$attractionName', $rate)";
 
         if ($conn->query($sql) === TRUE) {
@@ -50,12 +50,6 @@ foreach ($attractionNames as $attractionKey => $attractionName) {
 
 // Close connection
 $conn->close();
-
-// Output response (optional, for debugging)
-// foreach ($response as $message) {
-//     echo $message . "<br>";
-//}
-
 // Redirect to user_img.php with email parameter
 header("Location: add_item.php?email=" . urlencode($email));
 exit();
